@@ -37,8 +37,19 @@ public class GPSTracker implements  LocationListener {
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
-                int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+               int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
                 ActivityCompat.requestPermissions(m_CurrentActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                LocationManager m_LocationManager = (LocationManager) m_CurrentContext.getSystemService(Context.LOCATION_SERVICE);
+                boolean isGPSEnabled = m_LocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                if(isGPSEnabled){
+                    m_LocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 6000, 10, this);
+                    Location m_CurrentLocation =  m_LocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    return  m_CurrentLocation;
+                } else {
+                    Toast.makeText(m_CurrentContext, "GPS is Disabled", Toast.LENGTH_LONG).show();
+                    // Idea is to provide a way to let em enable it
+                    return  null; // Currently Returning Null
+                }
             }
 
             return  null; // Currently Returning Null
