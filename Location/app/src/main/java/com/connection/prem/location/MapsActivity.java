@@ -1,6 +1,7 @@
 package com.connection.prem.location;
 
 import android.location.Location;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -19,6 +20,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        // Remove the following 2 Policy lines later as we need to run all internet connectivity through Async call
+        // StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        // StrictMode.setThreadPolicy(policy);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -43,10 +49,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(m_gpsInfo != null) {
             Location m_currentLocation = m_gpsInfo.getLocation();
             LatLng sydney;
-            if(m_currentLocation != null)
+            if(m_currentLocation != null) {
                 sydney = new LatLng(m_currentLocation.getLatitude(), m_currentLocation.getLongitude());
-            else
+                //Fire Asych WebService to ask for the information from the Server
+                String serviceURL = "http://tinychat.com/api/tcinfo?username=tehgoku";
+                ServiceRequest  serviceRequest = new ServiceRequest();
+                serviceRequest.execute(serviceURL);
+            } else {
                 sydney = new LatLng(-34, 151);
+            }
             // Add a marker in Sydney and move the camera
             //LatLng sydney = new LatLng(-34, 151);
             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
